@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	%sveltekit.head%
+</head>
+
+<body data-sveltekit-preload-data="hover">
+	<div style="display: contents">%sveltekit.body%</div>
+</body>
+
+</html>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+	:root {
+		--sidebar-bg: #1a2236;
+		--sidebar-active: #0ea5e9;
+		--sidebar-hover: rgba(14, 165, 233, 0.15);
+		--text-primary: #f3f4f6;
+		--text-secondary: #9ca3af;
+	}
+
+	body {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	/* Admin auth pages specific styles */
+	body:has(.login-container),
+	body:has(.register-container) {
+		background-color: var(--sidebar-bg);
+		min-height: 100vh;
+		margin: 0;
+		padding: 0;
+	}
+</style>
