@@ -2,6 +2,7 @@
   import { enhance } from '$app/forms';
   export let form;
 </script>
+
 <div class="register-container">
   <div class="register-card">
     <div class="register-header">
@@ -9,39 +10,71 @@
       <h1>Admin Registration</h1>
       <p>Create a new admin account</p>
     </div>
+
     <form method="POST" action="?/register" use:enhance>
       <div class="form-group">
         <label for="email">Email Address</label>
         <div class="input-group">
           <i class="fas fa-envelope"></i>
-          <input type="email" name="email" id="email"  required placeholder="Enter the new admin email" />
+          <input
+            type="email"
+            name="email"
+            id="email"
+            required
+            placeholder="Enter the new admin email"
+          />
         </div>
       </div>
+
       <div class="form-group">
         <label for="username">Username</label>
         <div class="input-group">
           <i class="fas fa-user"></i>
-          <input type="text" name="username" id="username" required  placeholder="Choose a username for the new admin"/>
+          <input
+            type="text"
+            name="username"
+            id="username"
+            required
+            placeholder="Choose a username for the new admin"
+          />
         </div>
       </div>
+
       <div class="form-group">
         <label for="password">Password</label>
         <div class="input-group">
           <i class="fas fa-lock"></i>
-          <input   type="password" name="password" id="password" required placeholder="Create a password" minlength="8" />
+          <input
+            type="password"
+            name="password"
+            id="password"
+            required
+            placeholder="Create a password"
+            minlength="8"
+          />
         </div>
       </div>
+
       <div class="form-group">
         <label for="confirmPassword">Confirm Password</label>
         <div class="input-group">
           <i class="fas fa-lock"></i>
-          <input type="password" name="confirmPassword" id="confirmPassword" required placeholder="Confirm the password" minlength="8" />
+          <input
+            type="password"
+            name="confirmPassword"
+            id="confirmPassword"
+            required
+            placeholder="Confirm the password"
+            minlength="8"
+          />
         </div>
       </div>
+
       <button type="submit" class="register-btn">
         <i class="fas fa-user-plus"></i>
         Create Admin Account
       </button>
+
       {#if form?.message}
         <div class="error-message">
           <i class="fas fa-exclamation-circle"></i>
@@ -53,17 +86,15 @@
 </div>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
   @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
   :global(:root) {
-    --sidebar-bg: #1a2236;
     --sidebar-active: #0ea5e9;
-    --sidebar-hover: rgba(14, 165, 233, 0.15);
     --text-primary: #f3f4f6;
     --text-secondary: #9ca3af;
-    --transition-speed: 0.3s;
     --border-radius: 8px;
+    --transition-speed: 0.3s;
   }
 
   .register-container {
@@ -71,7 +102,7 @@
     min-height: 100vh;
     align-items: center;
     justify-content: center;
-    background-color: var(--sidebar-bg);
+    background-color: #1a2236;
     padding: 1rem;
     font-family: 'Poppins', sans-serif;
   }
@@ -79,12 +110,12 @@
   .register-card {
     width: 100%;
     max-width: 400px;
-    padding: 2.5rem;
+    padding: 2rem;
     background: rgba(255, 255, 255, 0.05);
     border-radius: var(--border-radius);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .register-header {
@@ -102,7 +133,7 @@
     font-size: 1.75rem;
     font-weight: 600;
     color: var(--text-primary);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
   }
 
   .register-header p {
