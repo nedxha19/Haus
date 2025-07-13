@@ -1,210 +1,225 @@
+Houseo\src\routes\admin\propertySystem\+page.svelte
 <script>
-  import { enhance } from '$app/forms';
-  let { data } = $props();
+    import { enhance } from '$app/forms';
+    let { data } = $props();
 </script>
 
 <section class="admin-container">
-  <header class="admin-header">
-    <h1>Property Management</h1>
-    <a href="propertySystem/addProperty" class="add-button">+ Add New Property</a>
-  </header>
+    <header class="admin-header">
+        <h1>Property Management</h1>
+        <a href="propertySystem\addProperty" class="add-button">+ Add New Property</a>
+    </header>
 
-  <div class="property-grid">
-    {#each data.properties as property (property.id)}
-      <div class="property-card">
-        <div class="image-container">
-          <img src={property.image} alt="Property House" class="property-image" />
-        </div>
-        <div class="property-info">
-          <h2 class="property-name">{property.location} — {property.type}</h2>
-          <p class="property-address">{property.address}</p>
-          <hr />
-          <div class="property-stats">
-            <div class="stat">
-              <i class="fas fa-ruler-combined icon"></i>
-              <span>{property.square_foot} sqft</span>
+    <div class="property-grid">
+        {#each data.properties as property (property.id)}
+            <div class="property-card">
+                <div class="image-container">
+                    <img src={property.image} alt="Property House" class="property-image" />
+                </div>
+                <div class="property-info">
+                    <h2 class="property-name">{property.location} — {property.type}</h2>
+                    <p class="property-address">{property.address}</p>
+                    <hr />
+                    <div class="property-stats">
+                        <div class="stat">
+                            <i class="fas fa-ruler-combined icon"></i>
+                            <span>{property.square_foot} sqft</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-bath icon"></i>
+                            <span>{property.bathrooms} Bath{property.bathrooms > 1 ? 's' : ''}</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-bed icon"></i>
+                            <span>{property.bedrooms} Bed{property.bedrooms > 1 ? 's' : ''}</span>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="property-price-type">
+                        <span class="property-price">${property.price.toLocaleString()}</span>
+                        <span class="property-type">{property.type}</span>
+                    </div>
+                    <form action="?/deleteProperty" method="POST" use:enhance>
+                        <input type="hidden" name="id" value={property.id} />
+                        <button type="submit" class="delete-button">Delete</button>
+                    </form>
+                </div>
             </div>
-            <div class="stat">
-              <i class="fas fa-bath icon"></i>
-              <span>{property.bathrooms} Bath{property.bathrooms > 1 ? 's' : ''}</span>
-            </div>
-            <div class="stat">
-              <i class="fas fa-bed icon"></i>
-              <span>{property.bedrooms} Bed{property.bedrooms > 1 ? 's' : ''}</span>
-            </div>
-          </div>
-          <hr />
-          <div class="property-price-type">
-            <span class="property-price">${property.price.toLocaleString()}</span>
-            <span class="property-type">{property.type}</span>
-          </div>
-          <form action="?/deleteProperty" method="POST" use:enhance>
-            <input type="hidden" name="id" value={property.id} />
-            <button type="submit" class="delete-button">Delete</button>
-          </form>
-        </div>
-      </div>
-    {/each}
-  </div>
+        {/each}
+    </div>
 </section>
 
 <style>
-  .admin-container {
+.admin-container {
     max-width: 1400px;
     margin: auto;
     padding: 40px 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #1f2937;
-    background-color: #f9fafb;
-    box-sizing: border-box;
-  }
+    color: #333;
+}
 
-  .admin-header {
+.admin-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
     margin-bottom: 30px;
-  }
+}
 
-  .admin-header h1 {
-    font-size: 1.75rem;
-    color: #0f172a;
-    font-weight: 600;
-  }
+.admin-header h1 {
+    font-size: 32px;
+    color: white;
+}
 
-  .add-button {
-    background-color: #0ea5e9;
+.add-button {
+    background-color: #007bff;
     color: white;
     padding: 10px 18px;
-    border-radius: 8px;
+    border-radius: 5px;
     text-decoration: none;
-    font-weight: 500;
-    font-size: 0.95rem;
     transition: background-color 0.3s;
-  }
+}
 
-  .add-button:hover {
-    background-color: #0284c7;
-  }
+.add-button:hover {
+    background-color: #0056b3;
+}
 
-  .property-grid {
+.property-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 25px;
-  }
+}
 
-  .property-card {
+.property-card {
     background-color: white;
-    border-radius: 12px;
+    border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
-  }
+    height: 450px;
+}
 
-  .property-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.1);
-  }
+.property-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
 
-  .image-container {
+.image-container {
     width: 100%;
-    height: 180px;
+    height: 50%;
     overflow: hidden;
-  }
+}
 
-  .property-image {
+.property-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-  }
+}
 
-  .property-info {
+.property-info {
     padding: 16px;
+    height: 50%;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    flex: 1;
-    background: #f8fafc;
-  }
-
-  .property-name {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #0ea5e9;
-    margin-bottom: 2px;
-  }
-
-  .property-address {
-    font-size: 0.9rem;
-    color: #6b7280;
-  }
-
-  .property-stats {
-    display: flex;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
+    background-color: #f8f9fa;
+}
 
-  .stat {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.85rem;
-    color: #374151;
-  }
-
-  .icon {
-    color: #9ca3af;
-  }
-
-  .property-price-type {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .property-price {
-    font-size: 1rem;
+.property-name {
+    font-size: 18px;
     font-weight: bold;
-    color: #0284c7;
-  }
+    color: #007bff;
+    margin-bottom: 8px;
+}
 
-  .property-type {
-    font-size: 0.85rem;
-    font-style: italic;
-    color: #6b7280;
-  }
+.property-address {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
 
-  .delete-button {
-    margin-top: 10px;
-    padding: 10px;
+.property-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #333;
+}
+
+.stat .icon {
+    font-size: 18px;
+    margin-right: 5px;
+    color: #333;
+}
+
+hr {
     border: none;
-    border-radius: 6px;
-    background-color: #ef4444;
-    color: white;
-    font-size: 0.9rem;
+    border-top: 1px solid #ddd;
+    margin: 8px 0;
+}
+
+.property-price-type {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.property-price {
+    font-size: 16px;
     font-weight: bold;
+    color: #007bff;
+}
+
+.property-type {
+    font-size: 14px;
+    font-style: italic;
+    color: #666;
+}
+
+.delete-button {
+    margin-top: 12px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
     cursor: pointer;
+    width: 100%;
+    font-weight: bold;
     transition: background-color 0.3s;
-  }
+}
 
-  .delete-button:hover {
-    background-color: #dc2626;
-  }
+.delete-button:hover {
+    background-color: #c82333;
+}
 
-  @media (max-width: 768px) {
-    .admin-header h1 {
-      font-size: 1.5rem;
+@media (max-width: 1024px) {
+    .property-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .property-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .property-card {
+        width: 100%;
+        margin-bottom: 20px;
     }
 
     .property-image {
-      height: 150px;
+        height: 200px;
     }
-  }
+
+    .property-info {
+        padding: 16px;
+    }
+}
 </style>

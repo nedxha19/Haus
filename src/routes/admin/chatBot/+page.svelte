@@ -1,3 +1,4 @@
+Houseo\src\routes\admin\chatBot\+page.svelte
 <script>
   let messages = [];
   let input = '';
@@ -95,18 +96,19 @@
     <button on:click={sendMessage}>Send</button>
   </footer>
 </div>
-
 <style>
   .chat-page {
     display: flex;
     flex-direction: column;
     height: 100vh;
     background: #ffffff;
-    color: #1f2937;
+    color: #1f2937; /* neutral dark text */
     font-family: 'Poppins', sans-serif;
   }
 
   .chat-header {
+    display: flex;
+    align-items: center;
     padding: 1rem 1.5rem;
     background: var(--sidebar-active);
     color: #ffffff;
@@ -122,15 +124,14 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    background: #f9fafb;
-    padding-bottom: 100px; /* Extra space for footer input */
+    background: #f9fafb; /* light gray background */
   }
 
   .message {
     max-width: 80%;
     padding: 0.75rem 1rem;
-    border-radius: 10px;
-    line-height: 1.5;
+    border-radius: var(--border-radius);
+    line-height: 1.4;
     font-size: 0.95rem;
     word-wrap: break-word;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -138,25 +139,22 @@
 
   .message.user {
     align-self: flex-end;
-    background: #e0f2fe;
-    color: #0c4a6e;
+    background: #e0f2fe; /* light blue */
+    color: #0c4a6e;      /* dark blue text */
   }
 
   .message.bot {
     align-self: flex-start;
-    background: #e5e7eb;
+    background: #e5e7eb; /* soft gray */
     color: #1f2937;
   }
 
   .chat-footer {
-    position: sticky;
-    bottom: 0;
     display: flex;
     gap: 0.5rem;
     padding: 1rem 1.25rem;
     border-top: 1px solid #e5e7eb;
     background: #ffffff;
-    z-index: 10;
   }
 
   .chat-footer textarea {
@@ -165,7 +163,7 @@
     padding: 0.75rem 1rem;
     font-size: 0.95rem;
     border-radius: var(--border-radius);
-    border: 1px solid #cbd5e1;
+    border: 1px solid #cbd5e1; /* soft border */
     background: #ffffff;
     color: #1f2937;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -206,19 +204,5 @@
   @keyframes blink {
     0%, 80%, 100% { opacity: 0; }
     40% { opacity: 1; }
-  }
-
-  @media (max-width: 600px) {
-    .chat-header h2 {
-      font-size: 1rem;
-    }
-
-    .chat-footer button {
-      padding: 0 1rem;
-    }
-
-    .chat-footer textarea {
-      font-size: 0.9rem;
-    }
   }
 </style>

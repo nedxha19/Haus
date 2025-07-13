@@ -1,11 +1,15 @@
 <script>
-  import { onMount } from 'svelte';
-  import '@fortawesome/fontawesome-free/css/all.min.css';
+  import { onMount } from 'svelte'; // Run code when component mounts
+  import '@fortawesome/fontawesome-free/css/all.min.css'; // Font Awesome icons
 
-  export let isSidebarHidden;
+  export let isSidebarHidden; //It decides if the sidebar should be collapsed (hidden) or fully open. 
+  let activeIndex = 0;  //Keeps track of which menu item is currently selected or clicked.
+  // So, when the page loads for the first time, "Property System" will be highlighted by default.
 
-  let activeIndex = 0;
 
+
+//The activeIndex helps us highlight the correct menu item visually.
+//Just an array of objects.
   const menuItems = [
     { icon: 'home', text: 'Property System', href: '/admin/propertySystem', idx: 0 },
     { icon: 'plus-circle', text: 'Add Property', href: '/admin/propertySystem/addProperty', idx: 1 },
@@ -13,45 +17,52 @@
     { icon: 'message', text: 'Chat Bot', href: '/admin/chatBot', idx: 3 },
     { icon: 'sign-out-alt', text: 'Logout', href: '/admin/logout', idx: 4 }
   ];
-
+// Controls if the Sidebar  true/false (open ↔ closed).
   function toggleSidebar() {
     isSidebarHidden = !isSidebarHidden;
   }
+// If isSidebarHidden = false, it becomes true
+// If isSidebarHidden = true, it becomes false
 
+ //Remember which menu item was clicked.
   function setActive(index) {
     activeIndex = index;
   }
-
-  onMount(() => {
-    const handleResize = () => {
-      isSidebarHidden = window.innerWidth < 768;
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  });
+ //  Makes sidebar auto-collapse on phones/tablets (< 768 px wide).
+onMount(() => {
+  const handleResize = () => {
+    isSidebarHidden = window.innerWidth < 768; // shrink on small screens
+  };
+  handleResize();                       // run once now
+  window.addEventListener('resize', handleResize); // run on every resize
+  return () => window.removeEventListener('resize', handleResize); // clean-up
+});
 </script>
 
 <nav class="sidebar {isSidebarHidden ? 'hide' : ''}">
   <div class="toggle-container">
     <!-- svelte-ignore a11y_consider_explicit_label -->
     <button class="toggle-btn" on:click={toggleSidebar}>
-      <i class="fas fa-bars"></i>
+      <i class="fas fa-chevron-left"></i> 
     </button>
   </div>
+<!-- Clicking calls toggleSidebar() to open/close the panel.-->
 
   <a href="/" class="logo">
     <i class="fas fa-user-cog logo-icon"></i>
-    <span class="logo-text">Admin Dashboard</span>
+    <span class="logo-text">Admin Dashboard</span> <!-- Icon + text, linking back to the main admin page. -->
   </a>
 
-  <ul class="side-menu">
+  <!-- We loop over menuItems and build one <li> per entry. -->
+
+  <ul class="side-menu"> <!-- Unordered List, will contain all the clickable menu links (as <li> elements).-->
     {#each menuItems as item (item.idx)}
+<!-- item is the current object in the array for each loop cycle,(item.idx) is used as a unique key so Svelte knows which item is which-->
       <li class="menu-item" class:active={activeIndex === item.idx}>
         <div class="active-indicator"></div>
-        <a href={item.href} class="nav-link" on:click={() => setActive(item.idx)}>
-          <i class="fas fa-{item.icon}"></i>
-          <span class="link-text">{item.text}</span>
+        <a  href={item.href}  class="nav-link"  on:click={() => setActive(item.idx)}>
+          <i class="fas fa-{item.icon}"></i>  <!-- This adds the Font Awesome icon for the item. -->
+          <span class="link-text">{item.text}</span> <!--This shows the visible text for each menu item.-->
         </a>
       </li>
     {/each}
@@ -70,7 +81,6 @@
     --border-radius: 8px;
     --icon-size: 1.25rem;
   }
-
   .sidebar {
     position: fixed;
     top: 0;
@@ -86,17 +96,14 @@
     z-index: 100;
     font-family: 'Poppins', sans-serif;
   }
-
   .sidebar.hide {
     width: 72px;
   }
-
   .toggle-container {
     display: flex;
     justify-content: flex-end;
     padding: 24px 20px 16px;
   }
-
   .toggle-btn {
     background: transparent;
     border: none;
@@ -110,12 +117,13 @@
     font-size: var(--icon-size);
     transition: transform var(--transition-speed), color 0.2s ease;
   }
-
   .toggle-btn:hover {
     color: var(--text-primary);
     background: rgba(255, 255, 255, 0.05);
   }
-
+  .sidebar.hide .toggle-btn {
+    transform: rotate(180deg);
+  }
   .logo {
     display: flex;
     align-items: center;
@@ -125,13 +133,11 @@
     margin-bottom: 12px;
     color: var(--text-primary);
   }
-
   .logo-icon {
     font-size: 22px;
     color: var(--sidebar-active);
     margin-right: 12px;
   }
-
   .logo-text {
     font-weight: 600;
     font-size: 19px;
@@ -139,20 +145,17 @@
     white-space: nowrap;
     transition: opacity var(--transition-speed);
   }
-
   .sidebar.hide .logo-text {
     opacity: 0;
     width: 0;
     overflow: hidden;
   }
-
   .side-menu {
     padding: 0 12px;
     list-style: none;
     margin: 0;
     flex-grow: 1;
   }
-
   .menu-item {
     position: relative;
     margin-bottom: 8px;
@@ -160,11 +163,9 @@
     border-radius: var(--border-radius);
     transition: background var(--transition-speed);
   }
-
   .menu-item.active {
     background: var(--sidebar-hover);
   }
-
   .nav-link {
     display: flex;
     align-items: center;
@@ -175,38 +176,31 @@
     border-radius: var(--border-radius);
     transition: color 0.2s ease, background var(--transition-speed);
   }
-
   .nav-link:hover {
     color: var(--text-primary);
     background: rgba(255, 255, 255, 0.03);
   }
-
   .menu-item.active .nav-link {
     color: var(--text-primary);
   }
-
   .nav-link i {
     min-width: 36px;
     font-size: var(--icon-size);
     transition: color var(--transition-speed);
   }
-
   .menu-item.active .nav-link i {
     color: var(--sidebar-active);
   }
-
   .link-text {
     font-weight: 500;
     font-size: 15px;
     transition: opacity var(--transition-speed), transform var(--transition-speed);
   }
-
   .sidebar.hide .link-text {
     opacity: 0;
     width: 0;
     overflow: hidden;
   }
-
   .active-indicator {
     position: absolute;
     left: 0;
@@ -219,20 +213,16 @@
     opacity: 0;
     transition: opacity var(--transition-speed);
   }
-
   .menu-item.active .active-indicator {
     opacity: 1;
   }
-
-  @media (max-width: 768px) {
-    .sidebar {
-      width: 72px;
-    }
-    .logo-text {
-      display: none;
-    }
-    .link-text {
-      display: none;
-    }
+  .user-info {
+    padding: 16px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
 </style>
