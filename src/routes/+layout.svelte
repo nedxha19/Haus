@@ -20,14 +20,30 @@
 {/if}
 
 <style>
+	/* Global CSS Reset */
+	* {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	html, body {
+		margin: 0;
+		padding: 0;
+		height: 100%;
+	}
+
 	main.main {
-		margin-left: 0px;
-		margin-right: 0px;
+		margin: 0;
+		padding: 0;
+		width: 100%;
+		height: 100%;
 	}
 
 	@media (max-width: 480px) {
 		main.main {
-			margin: 0px;
+			margin: 0;
+			padding: 0;
 		}
 	}
 	
