@@ -1,3 +1,7 @@
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<!-- svelte-ignore a11y-consider-explicit-label -->
+<!-- svelte-ignore a11y-label-has-associated-control -->
 <script>
 	import { onMount } from 'svelte';
 
@@ -157,447 +161,871 @@
 	};
 </script>
 
-<main class="calendar-page">
-	<div class="calendar">
-		<!-- Month Header -->
-		<div class="month">
-			<button type="button" class="prev" on:click={prevMonth} aria-label="Previous Month">
-				<i class="fas fa-angle-left" aria-hidden="true"></i>
-			</button>
-			<div class="date">{months[month]} {year}</div>
-			<button type="button" class="next" on:click={nextMonth} aria-label="Next Month">
-				<i class="fas fa-angle-right" aria-hidden="true"></i>
-			</button>
+<section class="admin-container">
+	<div class="calendar-header admin-section">
+		<div class="header-content">
+			<h1 class="admin-heading-1">Calendar Schedule</h1>
+			<p class="admin-text-body">Manage your property appointments and tasks</p>
 		</div>
+	</div>
 
-		<!-- Weekdays -->
+	<div class="calendar-content">
+		<div class="calendar-wrapper admin-card">
+			<!-- Month Navigation -->
+			<div class="month-header">
+				<div class="nav-btn" on:click={prevMonth}>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+					</svg>
+					Previous
+				</div>
+				<h2 class="admin-heading-2">{months[month]} {year}</h2>
+				<div class="nav-btn" on:click={nextMonth}>
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 18 6-6-6-6"/>
+					</svg>
+					Next
+				</div>
+			</div>
+
+			<!-- Calendar Grid -->
+			<div class="calendar-grid">
+				<!-- Weekdays Header -->
 		<div class="weekdays">
-			<div>Sun</div>
-			<div>Mon</div>
-			<div>Tue</div>
-			<div>Wed</div>
-			<div>Thu</div>
-			<div>Fri</div>
-			<div>Sat</div>
+					<div class="weekday">Sun</div>
+					<div class="weekday">Mon</div>
+					<div class="weekday">Tue</div>
+					<div class="weekday">Wed</div>
+					<div class="weekday">Thu</div>
+					<div class="weekday">Fri</div>
+					<div class="weekday">Sat</div>
 		</div>
 
 		<!-- Days Grid -->
-		<div class="days">
+				<div class="days-grid">
 			{#each Array.from({ length: new Date(year, month, 1).getDay() }, (_, i) => i) as _}
-				<div class="day prev-date" aria-hidden="true"></div>
+						<div class="day empty-day"></div>
 			{/each}
 			{#each Array.from({ length: daysInMonth(month, year) }, (_, i) => i + 1) as day}
 				<button
 					type="button"
-					class="day {isToday(day) ? 'today' : ''} {activeDay === day ? 'active' : ''} {hasTask(day)
-						? 'highlight'
-						: ''}"
-					aria-label={`Select day ${day}`}
+							class="day {isToday(day) ? 'today' : ''} {activeDay === day ? 'active' : ''} {hasTask(day) ? 'has-task' : ''}"
 					on:click={() => selectDay(day)}
 				>
 					{day}
+							{#if hasTask(day)}
+								<span class="task-indicator"></span>
+							{/if}
 				</button>
 			{/each}
+				</div>
 		</div>
 
-		<!-- Goto and Today Buttons -->
-		<div class="goto-today">
-			<div class="goto">
-				<input type="text" bind:value={dateInput} placeholder="mm/yyyy" />
-				<button on:click={gotoDate}>Go</button>
+			<!-- Calendar Controls -->
+			<div class="calendar-controls">
+				<div class="date-picker">
+					<input type="text" bind:value={dateInput} placeholder="mm/yyyy" class="admin-input" />
+					<button type="button" on:click={gotoDate} class="admin-button-primary">Go</button>
+				</div>
+				<button type="button" on:click={gotoToday} class="admin-button-primary">Today</button>
 			</div>
-			<button on:click={gotoToday}>Today</button>
 		</div>
 
-		<!-- Selected Day Header -->
-		<div class="today-date">
-			<div class="event-day">{getDayOfWeek(year, month, activeDay)}</div>
-			<div class="event-date">{activeDay} {months[month]} {year}</div>
+	</div>
+
+	<!-- Tasks Panel -->
+	<div class="tasks-panel admin-card">
+		<div class="tasks-header">
+			<div class="selected-date">
+				<span class="day-name">{getDayOfWeek(year, month, activeDay)}</span>
+				<span class="date-display">{activeDay} {months[month]} {year}</span>
+			</div>
+			<button type="button" on:click={() => (showAddTask = true)} class="admin-button-primary">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+				</svg>
+				Add Task
+			</button>
 		</div>
 
-		<!-- Events List -->
-		<div class="events">
+		<div class="tasks-list">
 			{#if selectedTasks.length > 0}
 				{#each selectedTasks as task}
-					<div class="event">
-						<div class="title {task.done ? 'done' : ''}">
+					<div class="task-item {task.done ? 'completed' : ''}">
+						<div class="task-content">
+							<div class="task-title">
 							<input type="checkbox" bind:checked={task.done} on:change={() => toggleDone(task)} />
-							<h3 class="event-title">{task.name}</h3>
+								<h3 class="admin-text-label">{task.name}</h3>
+							</div>
+							<p class="task-author">By: {task.author}</p>
+							<p class="task-description admin-text-body">{task.description}</p>
 						</div>
-						<div class="event-author"><strong>Author:</strong> {task.author}</div>
-						<div class="event-description">{task.description}</div>
-						<button class="done-btn" on:click={() => toggleDone(task)}>
-							{task.done ? 'Undo Done' : 'Mark as Done'}
+						<button type="button" class="task-toggle" on:click={() => toggleDone(task)}>
+							{task.done ? 'Undo' : 'Complete'}
 						</button>
 					</div>
 				{/each}
 			{:else}
-				<div class="no-event"><h3>No Tasks</h3></div>
+				<div class="no-tasks">
+					<p class="admin-text-body">No tasks scheduled for this day</p>
+				</div>
 			{/if}
 		</div>
 
-		<!-- Add Task Form -->
-		<div class="add-event-wrapper {showAddTask ? 'active' : ''}">
-			<div class="add-event-header">
-				<div class="title">Add Task</div>
-				<button
-					type="button"
-					class="close"
-					on:click={() => (showAddTask = false)}
-					aria-label="Close Add Task Form"
-				>
+	</div>
+
+	<!-- Add Task Modal -->
+	{#if showAddTask}
+		<div class="task-modal-overlay">
+			<div class="task-modal admin-card">
+				<div class="modal-header">
+					<h2 class="admin-heading-2">Add New Task</h2>
+					<div class="close-btn" on:click={() => (showAddTask = false)}>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+						</svg>
+						Close
+					</div>
+				</div>
+				
+				<form class="modal-form" on:submit|preventDefault={addTask}>
+					<div class="form-group">
+						<div class="admin-text-label">Task Name</div>
+						<input type="text" bind:value={taskName} class="admin-input" placeholder="Enter task name" />
+					</div>
 					
-				</button>
-			</div>
-			<div class="add-event-body">
-				<div class="add-event-input">
-					<input type="text" placeholder="Task Name" bind:value={taskName} />
-				</div>
-				<div class="add-event-input">
-					<input type="text" placeholder="Author" bind:value={taskAuthor} />
-				</div>
-				<div class="add-event-input">
-					<input type="text" placeholder="Description" bind:value={taskDescription} />
-				</div>
-				<div class="add-event-input">
-					<input type="date" placeholder="Date" bind:value={taskDate} />
-				</div>
+					<div class="form-group">
+						<div class="admin-text-label">Author</div>
+						<input type="text" bind:value={taskAuthor} class="admin-input" placeholder="Enter author name" />
+					</div>
+					
+					<div class="form-group">
+						<div class="admin-text-label">Description</div>
+						<input type="text" bind:value={taskDescription} class="admin-input" placeholder="Enter task description" />
+					</div>
+					
+					<div class="form-group">
+						<div class="admin-text-label">Date</div>
+						<input type="date" bind:value={taskDate} class="admin-input" />
+					</div>
+					
 				{#if errorMsg}
-					<div class="error-msg" role="alert">{errorMsg}</div>
+						<div class="error-message">{errorMsg}</div>
 				{/if}
+					
+					<div class="modal-actions">
+						<button type="button" class="cancel-btn" on:click={() => (showAddTask = false)}>Cancel</button>
+						<button type="submit" class="admin-button-primary">Add Task</button>
 			</div>
-			<div class="add-event-footer">
-				<button class="add-event-btn" on:click={addTask}>Add Task</button>
+				</form>
 			</div>
 		</div>
-	</div>
-</main>
+	{/if}
+</section>
 
 <style>
-	@import 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css';
-	@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    /* === CALENDAR HEADER === */
+    .calendar-header {
+        background: var(--admin-gradient-header);
+        color: var(--admin-text-white);
+    }
 
-	:global(:root) {
-		--calendar-bg: #1a2236;
-		--calendar-active: #0ea5e9;
-		--calendar-hover: rgba(14, 165, 233, 0.15);
-		--text-primary: #f3f4f6;
-		--text-secondary: #9ca3af;
-		--transition-speed: 0.3s;
-		--border-radius: 8px;
-		--tooltip-bg: rgba(26, 34, 54, 0.95);
-		--calendar-today-bg: #0ea5e9;
-		--calendar-event-bg: rgba(14, 165, 233, 0.1);
+    .calendar-header .admin-heading-1,
+    .calendar-header .admin-text-body {
+        color: var(--admin-text-white) !important;
+    }
+
+    .header-content {
+        text-align: center;
+        max-width: var(--admin-content-max-width);
+        margin: 0 auto;
 	}
 
-	.calendar-page {
-		width: 100%;
-		height: 100%;
-		display: flex;
-		justify-content: flex-start;
-		align-items: flex-start;
-		background: var(--calendar-bg);
-		color: var(--text-primary);
-		font-family: 'Poppins', sans-serif;
-	}
+        /* === CALENDAR LAYOUT === */
+    .calendar-content {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
 
-	.calendar {
-		flex: 1;
-		background: #222b44;
-		border-radius: var(--border-radius);
-		padding: 20px;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-		min-height: calc(100vh - 40px);
-		display: flex;
-		flex-direction: column;
-	}
+    .calendar-wrapper {
+        width: 100%;
+    }
 
-	.month {
+    /* === MONTH NAVIGATION === */
+    .month-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 20px;
+        margin-bottom: var(--admin-space-6);
+        padding-bottom: var(--admin-space-4);
+        border-bottom: 2px solid var(--admin-border-light);
 	}
 
-	.month button {
-		background: none;
+        .nav-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--admin-space-2);
+        padding: var(--admin-space-3) var(--admin-space-4);
+        background: var(--admin-bg-accent);
+        border: 1px solid var(--admin-border-medium);
+        border-radius: var(--admin-radius-lg);
+        color: var(--admin-text-primary);
+        cursor: pointer;
+        transition: var(--admin-transition-normal);
+        font-size: var(--admin-text-sm);
+        font-weight: 600;
+    }
+
+    .nav-btn:hover {
+        background: var(--admin-accent);
+        color: var(--admin-text-white);
+        border-color: var(--admin-accent);
+    }
+
+        .nav-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .month-header .admin-heading-2 {
+        color: var(--admin-text-primary) !important;
+        margin: 0;
+    }
+
+    /* === CALENDAR GRID === */
+    .calendar-grid {
+        margin-bottom: var(--admin-space-6);
+	}
+
+        .weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        margin-bottom: var(--admin-space-4);
+    }
+
+        .weekday {
+        text-align: center;
+        font-weight: 600;
+        color: var(--admin-text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .days-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+        .day {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--admin-bg-secondary);
+        border: 1px solid var(--admin-border-light);
+        border-radius: var(--admin-radius-md);
+        color: var(--admin-text-primary);
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--admin-transition-normal);
+    }
+
+    .day:hover {
+        background: var(--admin-bg-accent);
+        border-color: var(--admin-accent);
+        transform: translateY(-1px);
+    }
+
+    .day.empty-day {
+        background: transparent;
 		border: none;
-		color: var(--text-primary);
-		cursor: pointer;
-		font-size: 1.5rem;
-		transition: color 0.2s ease;
+        cursor: default;
+    }
+
+    .day.empty-day:hover {
+        background: transparent;
+        transform: none;
 	}
 
-	.month button:hover {
-		color: var(--calendar-active);
+    .day.today {
+        background: var(--admin-accent) !important;
+        color: var(--admin-text-white) !important;
+        font-weight: 700;
+        box-shadow: var(--admin-shadow-md);
 	}
 
-	.weekdays,
-	.days {
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);
-		gap: 8px;
-		margin-bottom: 10px;
-		text-align: center;
+    .day.active {
+        background: var(--admin-primary);
+        color: var(--admin-text-white);
+        border-color: var(--admin-primary);
 	}
 
-	.weekdays div {
-		font-weight: 600;
-		padding: 10px 0;
-		color: var(--text-secondary);
+    .day.has-task {
+        background: var(--admin-success-light);
+        border-color: var(--admin-success);
+        font-weight: 600;
+    }
+
+    .task-indicator {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 6px;
+        height: 6px;
+        background: var(--admin-success);
+        border-radius: 50%;
 	}
 
-	.days button {
-		background: none;
-		border: none;
-		color: var(--text-primary);
-		font-size: 1rem;
-		padding: 10px;
-		border-radius: var(--border-radius);
-		transition:
-			background var(--transition-speed),
-			color var(--transition-speed);
-		cursor: pointer;
-	}
-
-	.days button:hover {
-		background: var(--calendar-hover);
-	}
-
-	.days button.today {
-		background: var(--calendar-today-bg) !important;
-		color: white;
-		font-weight: 600;
-		border-radius: var(--border-radius);
-		box-shadow: 0 0 0 2px white;
-	}
-
-	.days button.active {
-		outline: 2px solid var(--calendar-active);
-	}
-
-	.day.highlight {
-		background: var(--calendar-event-bg);
-		border: 1px solid var(--calendar-active);
-		color: white;
-		font-weight: bold;
-	}
-
-	.goto-today {
+    /* === CALENDAR CONTROLS === */
+    .calendar-controls {
 		display: flex;
 		justify-content: space-between;
-		margin-top: 20px;
+        align-items: center;
+        padding: var(--admin-space-4);
+        background: var(--admin-bg-accent);
+        border-radius: var(--admin-radius-lg);
+    }
+
+    .date-picker {
+        display: flex;
+        gap: var(--admin-space-3);
+        align-items: center;
 	}
 
-	.goto input {
-		padding: 8px;
-		border-radius: var(--border-radius);
-		border: none;
-		margin-right: 8px;
-	}
+    .date-picker .admin-input {
+        width: 120px;
+    }
 
-	.goto button,
-	.goto-today > button {
-		padding: 8px 16px;
-		background: var(--calendar-active);
-		color: white;
-		border: none;
-		border-radius: var(--border-radius);
-		cursor: pointer;
-		transition: background 0.2s ease;
-	}
+        /* === TASKS PANEL === */
+    .tasks-panel {
+        width: 100%;
+    }
 
-	.goto button:hover,
-	.goto-today > button:hover {
-		background: #0284c7;
-	}
-
-	.today-date {
+    .tasks-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin: 20px 0;
-		font-size: 1.2rem;
-		font-weight: 500;
+        margin-bottom: var(--admin-space-6);
+        padding-bottom: var(--admin-space-4);
+        border-bottom: 2px solid var(--admin-border-light);
 	}
 
-	.events {
+    .selected-date {
 		display: flex;
 		flex-direction: column;
-		gap: 8px;
+        gap: var(--admin-space-1);
 	}
 
-	.event {
-		background: #f9fafb; /* clean light card */
-		border: 1px solid #e5e7eb;
-		padding: 16px;
-		border-radius: 10px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-		transition:
-			background 0.2s ease,
-			transform 0.2s ease;
+    .day-name {
+        font-size: var(--admin-text-sm);
+        color: var(--admin-text-secondary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .date-display {
+        font-size: var(--admin-text-lg);
+        color: var(--admin-text-primary);
+        font-weight: 700;
+    }
+
+    .tasks-header .admin-button-primary svg {
+        width: 16px;
+        height: 16px;
+    }
+
+        /* === TASKS LIST === */
+    .tasks-list {
+        display: grid;
+        gap: var(--admin-space-4);
+        overflow-y: auto;
+    }
+
+    .task-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: var(--admin-space-4);
+        background: var(--admin-bg-accent);
+        border: 1px solid var(--admin-border-light);
+        border-radius: var(--admin-radius-lg);
+        gap: var(--admin-space-4);
+        transition: var(--admin-transition-normal);
 	}
 
-	.event:hover {
-		background: #f3f4f6;
-		transform: translateY(-2px);
+    .task-item:hover {
+        background: var(--admin-bg-secondary);
+        border-color: var(--admin-accent);
+        transform: translateY(-1px);
+        box-shadow: var(--admin-shadow-md);
 	}
 
-	.event .title {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		font-weight: 600;
-		font-size: 1rem;
-		color: #111827;
+    .task-item.completed {
+        opacity: 0.7;
+        background: var(--admin-success-light);
+        border-color: var(--admin-success);
 	}
 
-	.event .event-title {
-		margin: 0;
-		font-size: 1.05rem;
+    .task-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: var(--admin-space-2);
 	}
 
-	.title.done h3 {
-		text-decoration: line-through;
-		color: #9ca3af;
+    .task-title {
+        display: flex;
+        align-items: center;
+        gap: var(--admin-space-3);
 	}
 
-	.event input[type='checkbox'] {
+    .task-title input[type="checkbox"] {
 		width: 18px;
 		height: 18px;
 		cursor: pointer;
 	}
 
-	.event-author {
-		font-size: 0.9rem;
-		color: #6b7280;
+    .task-title .admin-text-label {
+        margin: 0;
+        color: var(--admin-text-primary) !important;
+    }
+
+    .task-item.completed .task-title .admin-text-label {
+        text-decoration: line-through;
+        color: var(--admin-text-muted) !important;
+    }
+
+    .task-author {
+        font-size: var(--admin-text-sm);
+        color: var(--admin-text-secondary);
+        margin: 0;
 		font-weight: 500;
 	}
 
-	.event-description {
-		font-size: 0.9rem;
-		color: #4b5563;
-		font-style: normal;
+    .task-description {
+        margin: 0;
+        color: var(--admin-text-secondary) !important;
 	}
 
-	.done-btn {
-		align-self: flex-end;
-		padding: 6px 14px;
-		background: #10b981;
-		color: white;
+    .task-toggle {
+        padding: var(--admin-space-2) var(--admin-space-4);
+        background: var(--admin-success);
+        color: var(--admin-text-white);
 		border: none;
-		border-radius: 8px;
+        border-radius: var(--admin-radius-md);
+        font-size: var(--admin-text-sm);
+        font-weight: 600;
 		cursor: pointer;
-		font-size: 0.9rem;
-		font-weight: 500;
-		transition: background 0.2s ease;
+        transition: var(--admin-transition-normal);
+        white-space: nowrap;
 	}
 
-	.done-btn:hover {
+    .task-toggle:hover {
 		background: #059669;
+        transform: translateY(-1px);
 	}
 
-	.done-btn:hover {
-		background: #059669;
+    .task-item.completed .task-toggle {
+        background: var(--admin-secondary);
 	}
 
-	.no-event {
+    .no-tasks {
 		text-align: center;
-		color: #9ca3af;
-		font-weight: 500;
-		margin-top: 20px;
-		font-style: italic;
+        padding: var(--admin-space-8);
+        color: var(--admin-text-muted);
 	}
 
-.add-event-wrapper {
-  margin-top: 24px;
-  background: #f9fafb;
-  padding: 20px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    /* === TASK MODAL === */
+    .task-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .task-modal {
+        width: 100%;
+        max-width: 500px;
+        margin: var(--admin-space-4);
+        padding: 0;
+        overflow: hidden;
 }
 
-.add-event-header {
+    .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+        padding: var(--admin-space-6);
+        background: var(--admin-gradient-header);
+        color: var(--admin-text-white);
 }
 
-.add-event-header .title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #111827;
+    .modal-header .admin-heading-2 {
+        color: var(--admin-text-white) !important;
+        margin: 0;
+    }
+
+        .close-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--admin-space-2);
+        padding: var(--admin-space-2) var(--admin-space-3);
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: var(--admin-radius-md);
+        color: var(--admin-text-white);
+        cursor: pointer;
+        transition: var(--admin-transition-normal);
+        font-size: var(--admin-text-sm);
+        font-weight: 600;
+    }
+
+    .close-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
 }
 
-.add-event-header button {
-  background: none;
-  border: none;
-  color: #6b7280;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
+    .close-btn svg {
+        width: 14px;
+        height: 14px;
+    }
 
-.add-event-header button:hover {
-  color: #2563eb;
-}
+    .modal-form {
+        padding: var(--admin-space-6);
+    }
 
-
-.add-event-body .add-event-input {
+    .form-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
+        gap: var(--admin-space-2);
+        margin-bottom: var(--admin-space-5);
 }
 
-.add-event-body .add-event-input input {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  background-color: #ffffff;
-  font-size: 0.95rem;
-  color: #111827;
-  transition: border 0.2s ease;
+    .form-group .admin-text-label {
+        color: var(--admin-text-label) !important;
+    }
+
+    .error-message {
+        background: var(--admin-error-light);
+        color: var(--admin-error);
+        padding: var(--admin-space-3);
+        border-radius: var(--admin-radius-md);
+        font-size: var(--admin-text-sm);
+        font-weight: 500;
+        margin-bottom: var(--admin-space-4);
 }
 
-.add-event-body .add-event-input input:focus {
-  outline: none;
-  border-color: #2563eb;
+    .modal-actions {
+        display: flex;
+        gap: var(--admin-space-3);
+        justify-content: flex-end;
+        margin-top: var(--admin-space-6);
+        padding-top: var(--admin-space-4);
+        border-top: 1px solid var(--admin-border-light);
 }
 
-
-.error-msg {
-  color: #ef4444;
-  font-weight: 500;
-  margin-top: 8px;
-}
-
-
-.add-event-footer button {
-  padding: 10px 18px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 0.95rem;
+    .cancel-btn {
+        padding: var(--admin-space-3) var(--admin-space-6);
+        background: var(--admin-bg-secondary);
+        color: var(--admin-text-secondary);
+        border: 1px solid var(--admin-border-medium);
+        border-radius: var(--admin-radius-md);
+        font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
+        transition: var(--admin-transition-normal);
 }
 
-.add-event-footer button:hover {
-  background: #1d4ed8;
+    .cancel-btn:hover {
+        background: var(--admin-bg-accent);
+        border-color: var(--admin-accent);
+        color: var(--admin-text-primary);
 }
 
+    /* === PROFESSIONAL MOBILE-FIRST RESPONSIVE DESIGN === */
+    
+    /* Base Mobile Styles (Default - 320px+) */
+    .calendar-content {
+        padding: var(--admin-space-4);
+        gap: var(--admin-space-4);
+    }
 
-	.day.highlight {
-		background: var(--calendar-event-bg);
-		border: 1px solid var(--calendar-active);
-		color: white;
-		font-weight: bold;
-	}
+    .calendar-wrapper {
+        padding: var(--admin-space-4);
+    }
+
+    .tasks-panel {
+        padding: var(--admin-space-4);
+    }
+
+    .month-header {
+        flex-direction: column;
+        gap: var(--admin-space-4);
+        text-align: center;
+    }
+
+    .nav-btn {
+        padding: var(--admin-space-2) var(--admin-space-4);
+        font-size: var(--admin-text-xs);
+    }
+
+    .nav-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .days-grid {
+        gap: var(--admin-space-1);
+    }
+
+    .day {
+        min-height: 36px;
+        font-size: var(--admin-text-sm);
+        padding: var(--admin-space-1);
+    }
+
+    .weekday {
+        padding: var(--admin-space-2);
+        font-size: var(--admin-text-xs);
+    }
+
+    .calendar-controls {
+        flex-direction: column;
+        gap: var(--admin-space-3);
+        padding: var(--admin-space-3);
+    }
+
+    .date-picker {
+        flex-direction: column;
+        gap: var(--admin-space-2);
+        align-items: stretch;
+    }
+
+    .date-picker .admin-input {
+        width: 100%;
+    }
+
+    .tasks-header {
+        flex-direction: column;
+        gap: var(--admin-space-3);
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .tasks-header .admin-button-primary {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .tasks-list {
+        grid-template-columns: 1fr;
+    }
+
+    .task-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--admin-space-3);
+    }
+
+    .task-toggle {
+        align-self: stretch;
+        text-align: center;
+    }
+
+    .task-modal {
+        margin: var(--admin-space-2);
+        max-height: calc(100vh - var(--admin-space-4));
+        overflow-y: auto;
+    }
+
+    .modal-form {
+        padding: var(--admin-space-4);
+    }
+
+    .modal-actions {
+        flex-direction: column;
+        gap: var(--admin-space-3);
+    }
+
+    .modal-actions button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Small Mobile Landscape (480px+) */
+    @media (min-width: 480px) {
+        .month-header {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .nav-btn {
+            padding: var(--admin-space-3) var(--admin-space-4);
+            font-size: var(--admin-text-sm);
+        }
+
+        .nav-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .day {
+            min-height: 40px;
+            font-size: var(--admin-text-base);
+        }
+
+        .date-picker {
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .date-picker .admin-input {
+            width: 140px;
+        }
+
+        .tasks-header {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .tasks-header .admin-button-primary {
+            width: auto;
+        }
+
+        .modal-actions {
+            flex-direction: row;
+            justify-content: flex-end;
+        }
+
+        .modal-actions button {
+            width: auto;
+        }
+    }
+
+    /* Tablet Portrait (640px+) */
+    @media (min-width: 640px) {
+        .calendar-content {
+            padding: var(--admin-space-5);
+            gap: var(--admin-space-5);
+        }
+
+        .calendar-wrapper,
+        .tasks-panel {
+            padding: var(--admin-space-5);
+        }
+
+        .days-grid {
+            gap: var(--admin-space-2);
+        }
+
+        .day {
+            min-height: 44px;
+            padding: var(--admin-space-2);
+        }
+
+        .weekday {
+            padding: var(--admin-space-3);
+            font-size: var(--admin-text-sm);
+        }
+
+        .tasks-list {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .task-item {
+            flex-direction: row;
+            align-items: flex-start;
+        }
+
+        .task-toggle {
+            align-self: flex-start;
+            white-space: nowrap;
+        }
+
+        .calendar-controls {
+            flex-direction: row;
+            justify-content: space-between;
+            padding: var(--admin-space-4);
+        }
+    }
+
+    /* Tablet Landscape (768px+) */
+    @media (min-width: 768px) {
+        .calendar-content {
+            padding: var(--admin-space-6);
+            gap: var(--admin-space-6);
+        }
+
+        .calendar-wrapper,
+        .tasks-panel {
+            padding: var(--admin-space-6);
+        }
+
+        .tasks-list {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            max-height: 500px;
+        }
+
+        .task-modal {
+            margin: var(--admin-space-6);
+            max-width: 600px;
+        }
+
+        .modal-form {
+            padding: var(--admin-space-6);
+        }
+    }
+
+    /* Desktop Small (1024px+) */
+    @media (min-width: 1024px) {
+        .calendar-content {
+            max-width: var(--admin-content-max-width);
+            margin: 0 auto;
+            padding: var(--admin-space-8);
+        }
+
+        .tasks-list {
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            max-height: 600px;
+        }
+
+        .day {
+            min-height: 48px;
+            font-size: var(--admin-text-lg);
+        }
+
+        .task-modal {
+            max-width: 700px;
+        }
+    }
+
+    /* Desktop Large (1280px+) */
+    @media (min-width: 1280px) {
+        .tasks-list {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+    }
+
+    /* Ultra Wide Desktop (1536px+) */
+    @media (min-width: 1536px) {
+        .calendar-content {
+            max-width: 1400px;
+        }
+
+        .tasks-list {
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        }
+    }
 </style>
